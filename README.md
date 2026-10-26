@@ -23,6 +23,7 @@ Per-epoch progression:
 | 3 | 0.5660 | 0.5418 | 0.5172 |
 | 4 | 0.5140 | 0.4821 | 0.5819 |
 | 5 | 0.4857 | 0.4761 | 0.5761 |
+
 ![Metrics](assets/metrics.png)
 
 ## Observations
