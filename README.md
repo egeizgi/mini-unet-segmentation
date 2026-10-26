@@ -25,10 +25,8 @@ Per-epoch progression:
 
 ## Observations
 
-- The boundry class cover only a thin 2, 3 pixel band. 
-- For thin structures, a small spatial offset costs heavily in IoU: the intersection shrinks fast while the union stays large
-- The boundary itself is ambiguous even in the ground truth.
-- A wider receptive field does not help here, what is needed is high-resolution detail.
+<p>The boundary class covers only a thin 2-3 pixel band. For thin structures, a small spatial offset costs heavily in IoU: the intersection shrinks fast while the union stays large.</p>
+<p>The boundary itself is ambiguous even in the ground truth. A wider receptive field does not help here; what is needed is high-resolution detail.</p>
 
 ## Implemented from scratch
 

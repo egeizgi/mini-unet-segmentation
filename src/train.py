@@ -4,6 +4,9 @@ from metrics import count_intersection_union, mean_iou, iou_from_counts
 import torch
 import torch.nn as nn
 import numpy as np
+import json
+from pathlib import Path
+
 def main():
     torch.manual_seed(42)
     np.random.seed(42)
@@ -18,6 +21,7 @@ def main():
 
     EPOCH = 5
 
+    history = []
     for epoch in range(EPOCH):
         model.train()
         train_losses = []
@@ -62,6 +66,20 @@ def main():
         for c, iou in enumerate(ious):
             print(f"sınıf {c}: IoU {iou:.4f}" if iou is not None else f"sınıf {c}: yok")
         print(f"mIoU: {mean_iou(ious):.4f}")
+
+        history.append({
+            "epoch": epoch + 1,
+            "train_loss": train_loss,
+            "val_loss": val_loss,
+            "iou": ious,
+            "miou": mean_iou(ious),
+        })
+
+    Path("assets").mkdir(exist_ok=True)
+    with open("results.json", "w") as f:
+        json.dump(history, f, indent=2)
+    torch.save(model.state_dict(), "model.pth")
+    print("saved model.pth and results.json")
 
 if __name__ == '__main__':
     main()
