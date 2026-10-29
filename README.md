@@ -1,8 +1,8 @@
 # Mini U-Net - Oxford-IIIT Pet Segmentation
 
-Semantic segmentation on the Oxford-IIIT Pet dataset, with the U-Net architecture and the mIoU metric implemented from scratch. No pretrained segmentation models and no metric libraries were used
+Semantic segmentation on the Oxford-IIIT Pet dataset, with the U-Net architecture and the mIoU metric implemented from scratch. No pretrained segmentation models and no metric libraries were used.
 
-## Results 
+## Results: U-Net 
 ![Predictions](assets/predictions.png)
 
 Test split (3,669 images), 5 epochs, 128×128 input, batch size 8, Adam with lr=1e-3, seed 42.
@@ -24,7 +24,45 @@ Per-epoch progression:
 | 4 | 0.5140 | 0.4821 | 0.5819 |
 | 5 | 0.4857 | 0.4761 | 0.5761 |
 
+## Results: Vision Transformer 
+
+The same U-Net training setup was reused so architecture is the only variable. The ViT is a plain patch-embedding transformer.
+
+| Epoch | Train loss | Val loss | mIoU |
+|---|---|---|---|
+| 1 | 0.9154 | 0.7361 | 0.3787 |
+| 2 | 0.7308 | 0.7779 | 0.3200 |
+| 3 | 0.6993 | 0.7317 | 0.3401 |
+| 4 | 0.6787 | 0.6806 | 0.3842 |
+| 5 | 0.6608 | 0.6727 | 0.3748 |
+
+### Per-class IoU, final epoch
+
+| Class | U-Net | ViT |
+|---|---|---|
+| pet | 0.6361 | 0.4230 |
+| background | 0.7888 | 0.6961 |
+| boundary | 0.3035 | 0.0054 |
+| **mIoU** | **0.5806** | **0.3748** |
+
 ![Metrics](assets/metrics.png)
+
+![Per-class IoU](assets/per_class_iou.png)
+
+## U-Net vs ViT
+
+| | U-Net | ViT |
+|---|---|---|
+| Parameters | 2.2M | 5.0M |
+| Narrowest spatial resolution | 32×32 | 8×8 |
+| Detail recovery | skip connections | none (bilinear upsampling) |
+| Context | local, grows with depth | global from the first block |
+| Final mIoU | 0.5806 | 0.3748 |
+| Boundary IoU | 0.3035 | 0.0054 |
+
+Before running the experiment I assumed the ViT would land somewhere 0.45 and 0.50. At 0.3768 it is far further than my expectation.
+
+Two things explain the gap. The first one is resolution. The ViT compresses the image to an 8x8 grid in a single step, since there is nothing equivalent (like in the U-Net) to a skip connection in the design; every 16x16 region of the output is effectively driven by one token. The second is inductive bias. Convolution assumes that nearby pixels are related and that a pattern means same thing wherever it appears. A ViT assumes neither and has to learn both from data, which is relatively small 3,669 training images. This architecture earns its reputation when pretrained at scale, not when trained from scratch on a small dataset.
 
 ## Observations
 
